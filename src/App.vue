@@ -1,30 +1,56 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="">
+    <app-header></app-header>
+    <div class="row">
+    <router-link to='/' class="col">Home</router-link>
+    <router-link to='/about' class="col">About</router-link>
+    <router-link to='/master' class="col">Master</router-link>
+    </div>
+
+    <div>Tester</div>
+    <div v-if="blogs">
+      <blog-card v-for="blog in blogs" :key="blog.id" :data="blog"></blog-card>
+      <div class="row">
+        <div class="col-sm-4"></div>
+      <button type="button" class="btn btn-primary text-center col-sm-2  m-3" @click="showmore()">Load More</button>
+      </div>
+    </div>
+    <router-view></router-view>
+
   </div>
-  <router-view />
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<style lang="scss"></style>
+<script>
+import AppHeader from "./components/app-header";
+import BlogCard from "./components/blog-card";
+import axios from "axios";
+export default {
+  name: "app",
+  components: { AppHeader, BlogCard },
+  data() {
+    return {
+      blogs: null,
+      page:1,
+    };
+  },
+  mounted(){
+    // this.getBlogs(this.page);
+   
+  },
+  methods:{
+    getBlogs(page){
+       axios.get(`http://localhost:3000/posts?_page=${page}&_limit=2`).then((response) => {
+      console.log(response.data);
+      console.log("Data ended");
+      this.blogs =this.blogs?this.blogs.concat(response.data):response.data;
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+    });
+    },
+    showmore(){
+      this.page++;
+      this.getBlogs(this.page);
     }
   }
-}
-</style>
+};
+</script>
